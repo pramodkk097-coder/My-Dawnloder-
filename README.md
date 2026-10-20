@@ -38,6 +38,40 @@ My dawnloader
       font-size: 16px;
     }
 
+    
+<!-- Search Box -->
+<div style="text-align:center; margin:25px auto;">
+  <input
+    type="text"
+    id="searchBox"
+    placeholder="फ़ाइल का नाम खोजें..."
+    oninput="searchFiles()"
+    style="padding:12px; width:65%; max-width:400px;
+    border:1px solid #ccc; border-radius:8px;"
+  >
+
+  <button
+    onclick="searchFiles()"
+    style="padding:12px 18px; background:#2563eb;
+    color:white; border:0; border-radius:8px; cursor:pointer;">
+    🔍 Search
+  </button>
+</div>
+
+<script>
+function searchFiles() {
+  const input = document
+    .getElementById("searchBox")
+    .value.toLowerCase();
+
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = card.innerText
+      .toLowerCase()
+      .includes(input) ? "flex" : "none";
+  });
+}
+</script>
+
     .container {
       width: 92%;
       max-width: 900px;
