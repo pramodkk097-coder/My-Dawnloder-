@@ -1,109 +1,188 @@
-
+My dawnloader 
 <!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Easy Downloader</title>
+
+  <title>My Download Website</title>
+
+  <meta name="description" content="PDF, MP3, MP4 और ZIP फाइलें आसानी से डाउनलोड करें।">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
-      text-align: center;
-      padding: 25px 12px;
-    }
-    .box {
-      max-width: 420px;
-      margin: 35px auto;
-      padding: 22px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px #0002;
-    }
-    input, button {
+    * {
       box-sizing: border-box;
-      width: 100%;
-      padding: 13px;
-      margin-top: 12px;
-      border-radius: 8px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    header {
+      background: #2563eb;
+      color: white;
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
       font-size: 16px;
     }
-    input { border: 1px solid #bbb; }
-    button {
-      background: #1769e0;
-      color: white;
-      border: 0;
+
+    .container {
+      width: 92%;
+      max-width: 900px;
+      margin: 30px auto;
     }
-    #message { overflow-wrap: anywhere; }
+
+    .card {
+      background: white;
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .file-info h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .file-info p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .download-btn {
+      display: inline-block;
+      background: #16a34a;
+      color: white;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #15803d;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 520px) {
+      header h1 {
+        font-size: 25px;
+      }
+
+      .card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .download-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>Easy Downloader</h1>
-    <p>Apna direct file link yahan paste karein.</p>
-    <input id="url" type="url" placeholder="https://example.com/file.mp4">
-    <button onclick="downloadFile()">Download</button>
-    <p id="message"></p>
-  </div>
 
-  <script>
-    
-function downloadFile(
-  
-async function downloadFile() {
-  const input = document.getElementById("url");
-  const message = document.getElementById("message");
-  const url = input.value.trim();
+  <header>
+    <h1>My Download Website</h1>
+    <p>PDF, MP3, MP4 और ZIP फ़ाइलें डाउनलोड करें</p>
+  </header>
 
-  if (!/^https?:\/\//i.test(url)) {
-    message.textContent = "Sahi https:// ya http:// link daalein.";
-    return;
-  }
+  <main class="container">
 
-  message.textContent = "Thoda Ruke Jai shree Ram...";
+    <!-- PDF DOWNLOAD -->
+    <section class="card">
+      <div class="file-info">
+        <h2>📄 PDF File</h2>
+        <p>फ़ाइल: sample.pdf</p>
+      </div>
 
-  try {
-    const response = await fetch(url);
+      <a
+        class="download-btn"
+        href="downloads/sample.pdf"
+        download="sample.pdf">
+        ⬇ Download PDF
+      </a>
+    </section>
 
-    if (!response.ok) {
-      throw new Error("Download nahi ho saka");
-    }
+    <!-- MP3 DOWNLOAD -->
+    <section class="card">
+      <div class="file-info">
+        <h2>🎵 MP3 Audio</h2>
+        <p>फ़ाइल: sample.mp3</p>
+      </div>
 
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+      <a
+        class="download-btn"
+        href="downloads/sample.mp3"
+        download="sample.mp3">
+        ⬇ Download MP3
+      </a>
+    </section>
 
-    const filename =
-      decodeURIComponent(url.split("/").pop().split("?")[0]) ||
-      "download";
+    <!-- MP4 DOWNLOAD -->
+    <section class="card">
+      <div class="file-info">
+        <h2>🎬 MP4 Video</h2>
+        <p>फ़ाइल: sample.mp4</p>
+      </div>
 
-    link.href = objectUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+      <a
+        class="download-btn"
+        href="downloads/sample.mp4"
+        download="sample.mp4">
+        ⬇ Download MP4
+      </a>
+    </section>
 
-    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-    message.textContent = "Download shuru ho gaya!";
-  } catch (error) {
-    message.textContent =
-      "Direct download block hua. Neeche link kholkar try karein.";
+    <!-- ZIP DOWNLOAD -->
+    <section class="card">
+      <div class="file-info">
+        <h2>📦 ZIP File</h2>
+        <p>फ़ाइल: sample.zip</p>
+      </div>
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = "File ka link kholein";
-    message.appendChild(document.createElement("br"));
-    message.appendChild(link);
-  }
-}
-    
+      <a
+        class="download-btn"
+        href="downloads/sample.zip"
+        download="sample.zip">
+        ⬇ Download ZIP
+      </a>
+    </section>
 
+  </main>
 
-      message.textContent =
-        "Link kholne ki koshish ki gayi. Agar download na ho, to khula hua page check karein.";
-    }
-  </script>
+  <footer>
+    <p>© 2026 My Download Website</p>
+  </footer>
+
 </body>
 </html>
