@@ -48,27 +48,57 @@
 
   <script>
     
-function downloadFile() {
+function downloadFile(
+  
+async function downloadFile() {
   const input = document.getElementById("url");
   const message = document.getElementById("message");
   const url = input.value.trim();
 
   if (!/^https?:\/\//i.test(url)) {
-    message.textContent = "Kripya sahi http ya https link daalein.";
+    message.textContent = "Sahi https:// ya http:// link daalein.";
     return;
   }
 
-  message.textContent = "Download shuru karne ki koshish ho rahi hai...";
+  message.textContent = "Thoda Ruke Jai shree Ram...";
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.download = "";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Download nahi ho saka");
+    }
+
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    const filename =
+      decodeURIComponent(url.split("/").pop().split("?")[0]) ||
+      "download";
+
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+    message.textContent = "Download shuru ho gaya!";
+  } catch (error) {
+    message.textContent =
+      "Direct download block hua. Neeche link kholkar try karein.";
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "File ka link kholein";
+    message.appendChild(document.createElement("br"));
+    message.appendChild(link);
+  }
 }
+    
 
 
       message.textContent =
