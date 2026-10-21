@@ -23,7 +23,7 @@ main{width:94%;max-width:1050px;margin:20px auto}
 .card h3{font-size:18px;margin:10px 0 5px 0}
 .card img{width:100%;height:170px;object-fit:cover;background:#0b1120;border-radius:8px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn{display:inline-block;text-decoration:none;color:white;background:#16a34a;padding:11px;border-radius:8px;text-align:center;flex:1}
+.btn{display:inline-block;text-decoration:none;color:white;background:#16a34a;padding:11px;border-radius:8px;text-align:center;flex:1;cursor:pointer;border:none}
 .view{background:#2563eb}
 .icon{font-size:48px;text-align:center;padding:20px 0;background:#0b1120;border-radius:8px}
 .page{display:none}
@@ -34,6 +34,17 @@ main{width:94%;max-width:1050px;margin:20px auto}
 .avatar{width:100px;height:100px;border-radius:50%;object-fit:cover}
 footer{text-align:center;padding:25px;color:#bdc9dc}
 .hidden{display:none!important}
+
+/* Modal / Preview Style */
+.modal{display:none;position:fixed;z-index:50;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;padding:15px}
+.modal.open{display:flex}
+.modal-content{background:#172033;border:1px solid #334155;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:20px;position:relative}
+.modal-close{position:absolute;top:10px;right:15px;background:red;color:white;padding:5px 10px;border-radius:6px;font-weight:bold;cursor:pointer}
+.preview-container{margin:15px 0;text-align:center}
+.preview-container img{max-width:100%;max-height:60vh;border-radius:8px;object-fit:contain}
+.preview-container video,.preview-container audio{width:100%;max-height:60vh;border-radius:8px}
+.preview-container iframe{width:100%;height:60vh;border:none;border-radius:8px}
+
 @media(max-width:480px){.search{flex-wrap:wrap}.search input{flex-basis:100%}.search button{flex:1}}
 </style>
 </head>
@@ -47,7 +58,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 
 <div class="hero">
   <h2>Welcome to My Website ❤️</h2>
-  <p class="muted">Photos, Videos, PDF, MP3 और ZIP डाउनलोड करें।</p>
+  <p class="muted">Photos, Videos, PDF, MP3 और ZIP प्रिव्यू करें और डाउनलोड करें।</p>
 </div>
 
 <nav class="drawer" id="drawer">
@@ -71,7 +82,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
   </div>
 
   <h2>📁 All Files</h2>
-  <p class="muted">किसी फ़ाइल को देखने या डाउनलोड करने के लिए बटन दबाएँ।</p>
+  <p class="muted">डाउनलोड करने से पहले देखने/सुनने के लिए '👁️ Preview' बटन दबाएँ।</p>
   <div class="grid" id="fileGrid"></div>
   <p id="noResults" class="hidden">कोई फ़ाइल नहीं मिली।</p>
 </section>
@@ -92,7 +103,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 
 <section class="page" id="videos">
   <h2>🎬 Video Gallery</h2>
-  <p class="muted">यहाँ वीडियो देखें या डाउनलोड करें।</p>
+  <p class="muted">यहाँ वीडियो का प्रिव्यू देखें या डाउनलोड करें।</p>
   <div class="grid" id="videoGrid"></div>
 </section>
 
@@ -113,6 +124,18 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 </section>
 
 </main>
+
+<!-- Preview Modal -->
+<div class="modal" id="previewModal">
+  <div class="modal-content">
+    <button class="modal-close" id="closeModal">✖ Close</button>
+    <h3 id="modalTitle">File Preview</h3>
+    <div class="preview-container" id="modalBody"></div>
+    <div class="actions">
+      <a id="modalDownload" class="btn" href="" download>⬇ Download File</a>
+    </div>
+  </div>
+</div>
 
 <footer>© <span id="year"></span> My Download Hub</footer>
 
@@ -138,6 +161,58 @@ $("profileName").textContent = PROFILE_NAME;
 $("aboutName").textContent = PROFILE_NAME;
 $("year").textContent = new Date().getFullYear();
 
+function openPreview(file) {
+  const modal = $("previewModal");
+  const modalTitle = $("modalTitle");
+  const modalBody = $("modalBody");
+  const modalDownload = $("modalDownload");
+
+  modalTitle.textContent = file.name + " (" + file.type + ")";
+  modalDownload.href = file.path;
+  modalDownload.setAttribute("download", file.path.split("/").pop());
+
+  modalBody.innerHTML = "";
+
+  if (file.image) {
+    const img = document.createElement("img");
+    img.src = file.path;
+    img.alt = file.name;
+    modalBody.appendChild(img);
+  } else if (file.video) {
+    const video = document.createElement("video");
+    video.src = file.path;
+    video.controls = true;
+    video.autoplay = true;
+    modalBody.appendChild(video);
+  } else if (file.type === "MP3") {
+    const audio = document.createElement("audio");
+    audio.src = file.path;
+    audio.controls = true;
+    audio.autoplay = true;
+    modalBody.appendChild(audio);
+  } else if (file.type === "PDF") {
+    const iframe = document.createElement("iframe");
+    iframe.src = file.path;
+    modalBody.appendChild(iframe);
+  } else {
+    modalBody.innerHTML = `<div class="icon">📦</div><p>इस फाइल टाइप (${file.type}) का डायरेक्ट प्रिव्यू उपलब्ध नहीं है। आप इसे सीधे डाउनलोड कर सकते हैं।</p>`;
+  }
+
+  modal.classList.add("open");
+}
+
+function closePreview() {
+  const modal = $("previewModal");
+  const modalBody = $("modalBody");
+  modalBody.innerHTML = ""; // ऑडियो/वीडियो स्टॉप करने के लिए
+  modal.classList.remove("open");
+}
+
+$("closeModal").addEventListener("click", closePreview);
+$("previewModal").addEventListener("click", (e) => {
+  if (e.target === $("previewModal")) closePreview();
+});
+
 function makeCard(file) {
   const card = document.createElement("article");
   card.className = "card";
@@ -150,7 +225,6 @@ function makeCard(file) {
     img.onerror = () => { img.alt = "Photo not found"; };
     card.appendChild(img);
   } else {
-    // नॉर्मल फ़ाइल आइकॉन (वीडियो को भी सामान्य आइकॉन की तरह दिखाया गया है)
     const icon = document.createElement("div");
     icon.className = "icon";
     icon.textContent = ({
@@ -171,14 +245,12 @@ function makeCard(file) {
   const actions = document.createElement("div");
   actions.className = "actions";
 
-  // व्यू / ओपन बटन
-  const view = document.createElement("a");
-  view.className = "btn view";
-  view.href = file.path;
-  view.target = "_blank";
-  view.rel = "noopener";
-  view.textContent = "👁️ View";
-  actions.appendChild(view);
+  // प्रिव्यू बटन
+  const previewBtn = document.createElement("button");
+  previewBtn.className = "btn view";
+  previewBtn.textContent = "👁️ Preview";
+  previewBtn.addEventListener("click", () => openPreview(file));
+  actions.appendChild(previewBtn);
 
   // डाउनलोड बटन
   const download = document.createElement("a");
@@ -202,7 +274,6 @@ function renderFiles() {
   let found = 0;
 
   FILES.forEach(file => {
-    // नाम, टाइप और पाथ में सर्च मैचिंग
     const matches = query === "" || 
       file.name.toLowerCase().includes(query) ||
       file.type.toLowerCase().includes(query) ||
