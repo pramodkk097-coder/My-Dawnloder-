@@ -1,5 +1,4 @@
-
-<Jai Shree Ram>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
@@ -21,13 +20,12 @@ main{width:94%;max-width:1050px;margin:20px auto}
 .search input{flex:1;min-width:0;padding:12px;border-radius:8px;border:1px solid #475569;background:#172033;color:white}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
 .card,.panel{padding:15px;background:#172033;border:1px solid #334155;border-radius:12px;overflow-wrap:anywhere}
-.card h3{font-size:18px}
-.card img,.card video{width:100%;height:170px;object-fit:cover;background:#0b1120;border-radius:8px}
-.card video{height:auto;max-height:260px}
+.card h3{font-size:18px;margin:10px 0 5px 0}
+.card img{width:100%;height:170px;object-fit:cover;background:#0b1120;border-radius:8px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .btn{display:inline-block;text-decoration:none;color:white;background:#16a34a;padding:11px;border-radius:8px;text-align:center;flex:1}
 .view{background:#2563eb}
-.icon{font-size:42px}
+.icon{font-size:48px;text-align:center;padding:20px 0;background:#0b1120;border-radius:8px}
 .page{display:none}
 .page.active{display:block}
 .drawer{display:none;position:fixed;z-index:20;top:0;right:0;width:290px;max-width:85%;height:100%;overflow:auto;background:#111827;padding:18px;box-shadow:0 0 0 9999px #0009}
@@ -67,7 +65,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 
 <section class="page active" id="home">
   <div class="search">
-    <input id="searchInput" type="search" placeholder="फोटो या फाइल खोजें...">
+    <input id="searchInput" type="search" placeholder="फोटो या फाइल खोजें (उदा: mp4, photo, pdf)...">
     <button id="searchBtn">🔍 Search</button>
     <button id="resetBtn" style="background:#475569">Reset</button>
   </div>
@@ -81,8 +79,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 <section class="page" id="profile">
   <div class="panel">
     <h2>👤 My Profile</h2>
-    <img class="avatar" src="downloads/profile.jpg" alt="Profile photo"
-         onerror="this.style.display='none'">
+    <img class="avatar" src="downloads/profile.jpg" alt="Profile photo" onerror="this.style.display='none'">
     <h3 id="profileName">Your Name</h3>
     <p class="muted">Website Owner</p>
   </div>
@@ -95,7 +92,7 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 
 <section class="page" id="videos">
   <h2>🎬 Video Gallery</h2>
-  <p class="muted">यहाँ वीडियो चलाएँ या डाउनलोड करें।</p>
+  <p class="muted">यहाँ वीडियो देखें या डाउनलोड करें।</p>
   <div class="grid" id="videoGrid"></div>
 </section>
 
@@ -122,19 +119,17 @@ footer{text-align:center;padding:25px;color:#bdc9dc}
 <script>
 "use strict";
 
-/* अपनी जानकारी यहाँ बदलें */
 const PROFILE_NAME = "Your Name";
 
-/* अपनी असली फाइलों के पाथ यहाँ डालें */
 const FILES = [
-  {name:"Sample JPG Photo",type:"JPG",path:"downloads/photo.jpg",image:true},
-  {name:"Sample PNG Photo",type:"PNG",path:"downloads/photo.png",image:true},
-  {name:"Sample JPEG Photo",type:"JPEG",path:"downloads/photo.jpeg",image:true},
-  {name:"Sample WebP Photo",type:"WEBP",path:"downloads/photo.webp",image:true},
-  {name:"Sample PDF",type:"PDF",path:"downloads/sample.pdf"},
-  {name:"Sample MP3 Audio",type:"MP3",path:"downloads/sample.mp3"},
-  {name:"Sample MP4 Video",type:"MP4",path:"downloads/sample.mp4",video:true},
-  {name:"Sample ZIP File",type:"ZIP",path:"downloads/sample.zip"}
+  {name:"Sample JPG Photo", type:"JPG", path:"downloads/photo.jpg", image:true},
+  {name:"Sample PNG Photo", type:"PNG", path:"downloads/photo.png", image:true},
+  {name:"Sample JPEG Photo", type:"JPEG", path:"downloads/photo.jpeg", image:true},
+  {name:"Sample WebP Photo", type:"WEBP", path:"downloads/photo.webp", image:true},
+  {name:"Sample PDF", type:"PDF", path:"downloads/sample.pdf"},
+  {name:"Sample MP3 Audio", type:"MP3", path:"downloads/sample.mp3"},
+  {name:"Sample MP4 Video", type:"MP4", path:"downloads/sample.mp4", video:true},
+  {name:"Sample ZIP File", type:"ZIP", path:"downloads/sample.zip"}
 ];
 
 const $ = id => document.getElementById(id);
@@ -154,18 +149,12 @@ function makeCard(file) {
     img.loading = "lazy";
     img.onerror = () => { img.alt = "Photo not found"; };
     card.appendChild(img);
-  } else if(file.video) {
-    const video = document.createElement("video");
-    video.src = file.path;
-    video.controls = true;
-    video.preload = "metadata";
-    video.playsInline = true;
-    card.appendChild(video);
   } else {
+    // नॉर्मल फ़ाइल आइकॉन (वीडियो को भी सामान्य आइकॉन की तरह दिखाया गया है)
     const icon = document.createElement("div");
     icon.className = "icon";
     icon.textContent = ({
-      PDF:"📄", MP3:"🎵", ZIP:"📦"
+      PDF:"📄", MP3:"🎵", ZIP:"📦", MP4:"🎬"
     })[file.type] || "📁";
     card.appendChild(icon);
   }
@@ -182,16 +171,16 @@ function makeCard(file) {
   const actions = document.createElement("div");
   actions.className = "actions";
 
-  if(file.image || file.video) {
-    const view = document.createElement("a");
-    view.className = "btn view";
-    view.href = file.path;
-    view.target = "_blank";
-    view.rel = "noopener";
-    view.textContent = file.video ? "▶ Open Video" : "👁️ View";
-    actions.appendChild(view);
-  }
+  // व्यू / ओपन बटन
+  const view = document.createElement("a");
+  view.className = "btn view";
+  view.href = file.path;
+  view.target = "_blank";
+  view.rel = "noopener";
+  view.textContent = "👁️ View";
+  actions.appendChild(view);
 
+  // डाउनलोड बटन
   const download = document.createElement("a");
   download.className = "btn";
   download.href = file.path;
@@ -213,8 +202,11 @@ function renderFiles() {
   let found = 0;
 
   FILES.forEach(file => {
-    const matches = (file.name + " " + file.type + " " + file.path)
-      .toLowerCase().includes(query);
+    // नाम, टाइप और पाथ में सर्च मैचिंग
+    const matches = query === "" || 
+      file.name.toLowerCase().includes(query) ||
+      file.type.toLowerCase().includes(query) ||
+      file.path.toLowerCase().includes(query);
 
     if(!matches) return;
 
@@ -233,7 +225,9 @@ function renderFiles() {
   $("noResults").classList.toggle("hidden", found !== 0);
 }
 
+// सर्च इवेंट्स
 $("searchBtn").addEventListener("click", renderFiles);
+$("searchInput").addEventListener("keyup", renderFiles);
 $("searchInput").addEventListener("input", renderFiles);
 
 $("resetBtn").addEventListener("click", () => {
